@@ -1,7 +1,7 @@
 var request = require('request');
 require('dotenv').config()
 
-
+// Make github request with optional callback
 var githubRequest = function(url, cb) {
   var GITHUB_TOKEN = process.env.GITHUB_TOKEN;
   // Check that API token exists
@@ -18,11 +18,11 @@ var githubRequest = function(url, cb) {
     }
   };
 
-  // Send the request
-  request(options, function (err, res, body) {
+  // Send and return the request object (can be chained, eg: githubRequest.on(...))
+  return request(options, function (err, body) {
     if (err) {
       console.log(err);
-    } else {
+    } else if (cb) {
       cb(err, body);
     }
   });

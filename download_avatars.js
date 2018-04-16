@@ -1,13 +1,6 @@
 var fs = require('fs');
-var request = require('request');
 var path = require('path');
 var githubRequest = require('./github-request.js')
-var GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-  // Check that API token exists
-  if (!GITHUB_TOKEN) {
-    console.log('Error! Ensure API token is saved in /.env as GITHUB_TOKEN=<your_token>')
-    return;
-  }
 
 console.log('Welcome to the GitHub Avatar Downloader!');
 
@@ -19,13 +12,6 @@ function getRepoContributors(repoOwner, repoName, cb) {
 
 // Download an image from URL and save to filepath
 function downloadImageByURL(url, filePath) {
-  var options = {
-    url: url,
-    headers: {
-      'User-Agent': 'request',
-      'Authorization': 'token ' + GITHUB_TOKEN
-    }
-  };
   // Check that the write directory exists
   var dirname = path.dirname(filePath);
   if (!fs.existsSync(dirname)) {
@@ -33,17 +19,10 @@ function downloadImageByURL(url, filePath) {
   }
 
   // Request the file and pipe to stream
-  request(options)
-    .on('error', function (err) {
-      console.log(err);
-    })
-    .on('response', function (res) {
-      console.log(`Received reponse "${res.statusCode}: ${res.statusMessage}" from ${url}`);
-    })
-    .pipe(fs.createWriteStream(filePath)
-      .on('finish', function () {
-        console.log(`Finished writing to ${filePath}`);
-      }));
+  githubRequest(url).pipe(fs.createWriteStream(filePath)
+  .on('finish', function () {
+    console.log(`Finished writing to ${filePath}`);
+  }))
 }
 
 // Start of main program execution
