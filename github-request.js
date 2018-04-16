@@ -1,8 +1,10 @@
 var request = require('request');
 require('dotenv').config()
 
+var githubRequestModule = {}
+
 // Make github request with optional callback
-var githubRequest = function(url, cb) {
+githubRequestModule.githubRequest = function (url, cb) {
   var GITHUB_TOKEN = process.env.GITHUB_TOKEN;
   // Check that API token exists
   if (!GITHUB_TOKEN) {
@@ -28,4 +30,10 @@ var githubRequest = function(url, cb) {
   });
 }
 
-module.exports = githubRequest;
+githubRequestModule.getRepoContributors = function(repoOwner, repoName, cb) {
+  var url = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contributors";
+  githubRequestModule.githubRequest(url, cb)
+}
+
+
+module.exports = githubRequestModule;

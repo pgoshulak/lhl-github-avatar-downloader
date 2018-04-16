@@ -1,14 +1,9 @@
 var fs = require('fs');
 var path = require('path');
-var githubRequest = require('./github-request.js')
+var githubRequest = require('./github-request.js').githubRequest
+var getRepoContributors= require('./github-request.js').getRepoContributors
 
 console.log('Welcome to the GitHub Avatar Downloader!');
-
-// Given repo owner and name, get all contributors
-function getRepoContributors(repoOwner, repoName, cb) {
-  var url = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contributors";
-  githubRequest(url, cb)
-}
 
 // Download an image from URL and save to filepath
 function downloadImageByURL(url, filePath) {
@@ -59,8 +54,4 @@ if (args.length !== 2) {
       }
     }
   });
-}
-
-module.exports = {
-  getRepoContributors: getRepoContributors
 }
