@@ -1,36 +1,20 @@
-var request = require('request');
 var fs = require('fs');
+var request = require('request');
 var path = require('path');
-require('dotenv').config()
-
+var githubRequest = require('./github-request.js')
 var GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-// Check that API token exists
-if (!GITHUB_TOKEN) {
-  console.log('Error! Ensure API token is saved in /.env as GITHUB_TOKEN=<your_token>')
-  return;
-}
+  // Check that API token exists
+  if (!GITHUB_TOKEN) {
+    console.log('Error! Ensure API token is saved in /.env as GITHUB_TOKEN=<your_token>')
+    return;
+  }
 
 console.log('Welcome to the GitHub Avatar Downloader!');
 
 // Given repo owner and name, get all contributors
 function getRepoContributors(repoOwner, repoName, cb) {
-  // GET request options
-  var options = {
-    url: "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contributors",
-    headers: {
-      'User-Agent': 'request',
-      'Authorization': 'token ' + GITHUB_TOKEN
-    }
-  };
-
-  // Send the request
-  request(options, function (err, res, body) {
-    if (err) {
-      console.log(err);
-    } else {
-      cb(err, body);
-    }
-  });
+  var url = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contributors";
+  githubRequest(url, cb)
 }
 
 // Download an image from URL and save to filepath
