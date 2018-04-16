@@ -2,8 +2,8 @@ var getRepoContributors = require('./github-request.js').getRepoContributors;
 var githubRequest = require('./github-request.js').githubRequest;
 require('padleft');
 
+// Check that the correct args are given
 var args = process.argv.slice(2);
-
 if (args.length !== 2) {
   console.log('Error: incorrect arguments supplied. Please provide 2 arguments as <user> <repo>, eg:');
   console.log('  $ node download_avatars.js jquery jquery');
@@ -25,6 +25,7 @@ var logTopRepos = function(repos) {
   }
 }
 
+// Get the repo's contributors and find their top-starred repos
 getRepoContributors(args[0], args[1], function (err, res, body) {
   var contributors = JSON.parse(body);
   console.log(`Retrieved ${contributors.length} contributors`)
@@ -34,8 +35,13 @@ getRepoContributors(args[0], args[1], function (err, res, body) {
     starredUrls.push(contributor.starred_url)
   });
 
+  // Number of repos still waiting for results
   var reposAwaitingResults = contributors.length;
+
+  // Master list of repos counted so far
   var repoStarCount = {}
+
+  // Process each contributor's starred URLs
   starredUrls.forEach(function (url) {
     cleanUrl = url.split('{')[0];
     // Fetch the repos at the url
@@ -55,6 +61,7 @@ getRepoContributors(args[0], args[1], function (err, res, body) {
           };
         }
       });
+      // Register that this repo is finished being processed
       reposAwaitingResults -= 1;
     });
 
@@ -63,6 +70,7 @@ getRepoContributors(args[0], args[1], function (err, res, body) {
   // Check to see if all repos are done downloading (not using async/await yet!)
   awaitAllRepos = setInterval(function () {
     console.log(`Waiting for ${reposAwaitingResults} results`)
+    // Exit this loop when all repos are done processing
     if (reposAwaitingResults === 0) {
       clearInterval(awaitAllRepos)
       console.log(`Finished!`)
