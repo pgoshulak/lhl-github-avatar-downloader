@@ -4,6 +4,11 @@ var path = require('path');
 require('dotenv').config()
 
 var GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+// Check that API token exists
+if (!GITHUB_TOKEN) {
+  console.log('Error! Ensure API token is saved in /.env as GITHUB_TOKEN=<your_token>')
+  return;
+}
 
 console.log('Welcome to the GitHub Avatar Downloader!');
 
@@ -19,7 +24,7 @@ function getRepoContributors(repoOwner, repoName, cb) {
   };
 
   // Send the request
-  request(options, function(err, res, body) {
+  request(options, function (err, res, body) {
     if (err) {
       console.log(err);
     } else {
@@ -45,14 +50,14 @@ function downloadImageByURL(url, filePath) {
 
   // Request the file and pipe to stream
   request(options)
-    .on('error', function(err) {
+    .on('error', function (err) {
       console.log(err);
     })
-    .on('response', function(res) {
+    .on('response', function (res) {
       console.log(`Received reponse "${res.statusCode}: ${res.statusMessage}" from ${url}`);
     })
     .pipe(fs.createWriteStream(filePath)
-      .on('finish', function() {
+      .on('finish', function () {
         console.log(`Finished writing to ${filePath}`);
       }));
 }
@@ -66,7 +71,7 @@ if (args.length !== 2) {
   console.log('  $ node download_avatars.js jquery jquery');
 } else {
   // Download list of all repo contributors
-  getRepoContributors(args[0], args[1], function(err, result) {
+  getRepoContributors(args[0], args[1], function (err, result) {
     if (err) {
       console.log(err);
     } else {
@@ -74,10 +79,18 @@ if (args.length !== 2) {
 
       // If user or repo does not exist, resultArr will NOT be an array
       if (!Array.isArray(resultArr)) {
-        console.log('Error! Ensure the username and repo are valid')
+        switch (resultArr.message) {
+          case 'Bad credentials':
+            console.log('Error! Bad credentials. Ensure your API key is correct');
+            break;
+
+          case 'Not Found':
+            console.log('Error! Ensure the username and repo are valid')
+            break;
+        }
       } else {
         // Loop through each result obj and download the associated avatar URL
-        resultArr.forEach(function(res) {
+        resultArr.forEach(function (res) {
           downloadImageByURL(res.avatar_url, `avatars/${res.login}.jpg`);
         });
       }
