@@ -34,11 +34,11 @@ if (args.length !== 2) {
   console.log('  $ node download_avatars.js jquery jquery');
 } else {
   // Download list of all repo contributors
-  getRepoContributors(args[0], args[1], function (err, result) {
+  getRepoContributors(args[0], args[1], function (err, res, body) {
     if (err) {
       console.log(err);
     } else {
-      resultArr = JSON.parse(result);
+      resultArr = JSON.parse(body);
 
       // If user or repo does not exist, resultArr will NOT be an array
       if (!Array.isArray(resultArr)) {
@@ -59,4 +59,8 @@ if (args.length !== 2) {
       }
     }
   });
+}
+
+module.exports = {
+  getRepoContributors: getRepoContributors
 }

@@ -19,11 +19,11 @@ var githubRequest = function(url, cb) {
   };
 
   // Send and return the request object (can be chained, eg: githubRequest.on(...))
-  return request(options, function (err, body) {
+  return request(options, function (err, res, body) {
     if (err) {
       console.log(err);
     } else if (cb) {
-      cb(err, body);
+      cb(err, res, body);
     }
   });
 }
