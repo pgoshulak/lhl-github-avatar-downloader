@@ -70,11 +70,17 @@ if (args.length !== 2) {
     if (err) {
       console.log(err);
     } else {
-      resultObj = JSON.parse(result);
-      // Loop through each result obj and download the associated avatar URL
-      resultObj.forEach(function(res) {
-        downloadImageByURL(res.avatar_url, `avatars/${res.login}.jpg`);
-      });
+      resultArr = JSON.parse(result);
+
+      // If user or repo does not exist, resultArr will NOT be an array
+      if (!Array.isArray(resultArr)) {
+        console.log('Error! Ensure the username and repo are valid')
+      } else {
+        // Loop through each result obj and download the associated avatar URL
+        resultArr.forEach(function(res) {
+          downloadImageByURL(res.avatar_url, `avatars/${res.login}.jpg`);
+        });
+      }
     }
   });
 }
