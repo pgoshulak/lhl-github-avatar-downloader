@@ -1,5 +1,6 @@
 var getRepoContributors = require('./github-request.js').getRepoContributors;
 var githubRequest = require('./github-request.js').githubRequest;
+require('padleft');
 
 var args = process.argv.slice(2);
 
@@ -20,7 +21,7 @@ var logTopRepos = function(repos) {
   for (var i = 0; i < 5 && i < sortedRepos.length; i++) {
     var repoId = sortedRepos[i];
     var repo = repos[repoId];
-    console.log(`[ ${String(repo.stars).padStart(3)} stars ] ${repoId}`);
+    console.log(`[ ${String(repo.stars).padLeft(3, ' ')} stars ] ${repoId}`);
   }
 }
 
